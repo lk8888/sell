@@ -30,15 +30,34 @@
 			<img :src="seller.avatar" width="100%" height="100%">
 		</div>
 		<div v-show="detailShow" class="detail">
-			<div class="detail-title">
-				<div class="name"> {{seller.name}} </div>
-				<div class="appraise">
-					
+			<div class="detail-wrapper clearfix">
+				<div class="detail-content">
+					<h1 class="name"> {{seller.name}} </h1>
+					<div class="star"></div>
+					<div class="title">
+						<div class="line"></div>
+						<div class="text">优惠信息</div>
+						<div class="line"></div>
+					</div>
+					<ul class="supports" v-if="seller.supports">
+						<li v-for="item in seller.supports" class="supports-item">
+							<span class="icon":class="classMap[item.type]"></span>
+							<span class="text"> {{item.description}} </span>
+						</li>
+					</ul>
+					<div class="title">
+						<div class="line"></div>
+						<div class="text">商家公告</div>
+						<div class="line"></div>
+					</div>
+					<p class="bulletin">
+						{{seller.bulletin}}
+					</p>
 				</div>
 			</div>
-			<div class="detail-favorable"></div>
-			<div class="detail-bulletin"></div>
-			<div class="detail-close"></div>
+			<div class="detail-close" @click="hideDetail">
+				<i class="icon-close"></i>
+			</div>
 		</div>
 	</div>
 </template>
@@ -57,6 +76,9 @@
 		methods: {
 			showDetail() {
 				this.detailShow = true;
+			},
+			hideDetail() {
+			this.detailShow = false;
 			}
 		},
 		created() {
@@ -66,6 +88,7 @@
 </script>
 <style lang="stylus" rel="stylesheet/stylus">
 	@import '../../common/stylus/mixin.styl'
+	@import '../../common/stylus/base.styl'
 	.header
 		position: relative
 		overflow: hidden
@@ -191,16 +214,81 @@
 			height: 100%
 			z-index: 100
 			overflow: auto
-			padding: 64px 36px 32px 36px
 			background: rgba(7, 17, 27, 0.8)
-			border: 1px solid red
-			.detail-title
-				.name
-					font-size: 16px
-					font-weight: 700
-					line-height: 16px
-					text-align: center
-					margin-bottom: 16px
-				.appraise
-					height: 24px
+			.detail-wrapper
+				height: auto
+				min-height: 100%
+				width: 100%
+				.detail-content
+					margin-top: 64px
+					padding-bottom: 64px
+					h1
+						font-size: 16px
+						font-weight: 700
+						line-height: 16px
+						text-align: center
+					.star
+						margin: 16px auto 28px auto
+						height: 24px
+					.title
+						display: flex
+						width: 80%
+						margin: 0 auto 24px auto
+						.line
+							flex: 1
+							position: relative
+							top: -6px
+							border-bottom: 1px solid rgba(255, 255, 255, 0.2)
+						.text
+							font-size: 14px
+							line-height: 14px
+							font-weight: 700
+							margin: 0 12px
+					.supports
+						width: 80%
+						margin: 0 auto
+						padding: 0 12px
+						.supports-item
+							margin-bottom: 12px
+							font-size: 0
+							&: last-child
+								margin-bottom: 0
+							.icon
+								display: inline-block
+								vertical-align: top
+								width: 16px
+								height: 16px
+								margin-right: 6px
+								background-size: 16px 16px
+								background-repeat: no-repeat
+								&.decrease
+									bg-image('decrease_2')
+								&.discount
+									bg-image('discount_2')
+								&.special
+									bg-image('special_2')
+								&.invoice
+									bg-image('invoice_2')
+								&.guarantee
+									bg-image('guarantee_2')
+							.text
+								font-size: 12px
+								font-weight: 200
+								line-height: 12px
+					.bulletin
+						width: 80%
+						margin: 0 auto
+						padding: 0 12px
+						font-size: 12px
+						line-height: 24px
+			.detail-close
+				position: relative
+				margin: -64px auto 0 auto
+				width: 32px
+				height: 32px
+				line-height: 32px
+				font-size: 32px
+				color: rgba(255, 255, 255, 0.5)
+				clear: both
+
 </style>

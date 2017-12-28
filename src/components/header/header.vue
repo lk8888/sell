@@ -29,36 +29,38 @@
 		<div class="background">
 			<img :src="seller.avatar" width="100%" height="100%">
 		</div>
-		<div v-show="detailShow" class="detail">
-			<div class="detail-wrapper clearfix">
-				<div class="detail-content">
-					<h1 class="name"> {{seller.name}} </h1>
-					<div class="star"></div>
-					<div class="title">
-						<div class="line"></div>
-						<div class="text">优惠信息</div>
-						<div class="line"></div>
+		<transition name="fade">
+			<div v-show="detailShow" class="detail">
+				<div class="detail-wrapper clearfix">
+					<div class="detail-content">
+						<h1 class="name"> {{seller.name}} </h1>
+						<div class="star"></div>
+						<div class="title">
+							<div class="line"></div>
+							<div class="text">优惠信息</div>
+							<div class="line"></div>
+						</div>
+						<ul class="supports" v-if="seller.supports">
+							<li v-for="item in seller.supports" class="supports-item">
+								<span class="icon":class="classMap[item.type]"></span>
+								<span class="text"> {{item.description}} </span>
+							</li>
+						</ul>
+						<div class="title">
+							<div class="line"></div>
+							<div class="text">商家公告</div>
+							<div class="line"></div>
+						</div>
+						<div class="bulletin">
+							<p class="text">{{seller.bulletin}}</p>
+						</div>
 					</div>
-					<ul class="supports" v-if="seller.supports">
-						<li v-for="item in seller.supports" class="supports-item">
-							<span class="icon":class="classMap[item.type]"></span>
-							<span class="text"> {{item.description}} </span>
-						</li>
-					</ul>
-					<div class="title">
-						<div class="line"></div>
-						<div class="text">商家公告</div>
-						<div class="line"></div>
-					</div>
-					<p class="bulletin">
-						{{seller.bulletin}}
-					</p>
+				</div>
+				<div class="detail-close" @click="hideDetail">
+					<i class="icon-close"></i>
 				</div>
 			</div>
-			<div class="detail-close" @click="hideDetail">
-				<i class="icon-close"></i>
-			</div>
-		</div>
+		</transition>
 	</div>
 </template>
 <script>
@@ -121,7 +123,7 @@
 						margin-left: 6px
 						font-size: 16px
 						font-weight: bold
-						line-height: 18px
+						line-height: 20px
 				.description
 					margin-bottom: 10px
 					font-size: 10px
@@ -205,7 +207,15 @@
 			width: 100%
 			height: 100%
 			z-index: -1
-			filter: blur(10px)
+			filter: blur(10px)	
+		.fade-enter-active, .fade-leave-active
+			transition:	all .5s
+		.fade-enter, .fade-leave-to
+			opacity: 0
+			background: rgba(7, 17, 27, 0)
+		.fade-leave, .fade-enter-to
+			opacity: 1
+			background: rgba(7, 17, 27, 0.8)
 		.detail
 			position: fixed
 			top: 0
@@ -219,7 +229,7 @@
 				height: auto
 				min-height: 100%
 				width: 100%
-				.detail-content
+				.detail-content	
 					margin-top: 64px
 					padding-bottom: 64px
 					h1
@@ -228,12 +238,12 @@
 						line-height: 16px
 						text-align: center
 					.star
-						margin: 16px auto 28px auto
+						margin: 16px auto 0 auto
 						height: 24px
 					.title
 						display: flex
 						width: 80%
-						margin: 0 auto 24px auto
+						margin: 28px auto 24px auto
 						.line
 							flex: 1
 							position: relative
@@ -247,8 +257,8 @@
 					.supports
 						width: 80%
 						margin: 0 auto
-						padding: 0 12px
 						.supports-item
+							padding: 0 12px
 							margin-bottom: 12px
 							font-size: 0
 							&: last-child
@@ -274,13 +284,14 @@
 							.text
 								font-size: 12px
 								font-weight: 200
-								line-height: 12px
+								line-height: 16px
 					.bulletin
 						width: 80%
 						margin: 0 auto
-						padding: 0 12px
-						font-size: 12px
-						line-height: 24px
+						.text
+							padding: 0 12px
+							font-size: 12px
+							line-height: 24px
 			.detail-close
 				position: relative
 				margin: -64px auto 0 auto

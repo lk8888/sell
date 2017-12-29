@@ -34,7 +34,9 @@
 				<div class="detail-wrapper clearfix">
 					<div class="detail-content">
 						<h1 class="name"> {{seller.name}} </h1>
-						<div class="star"></div>
+						<div class="star-wrapper">
+							<star :size="48" :score="seller.score"></star>
+						</div>
 						<div class="title">
 							<div class="line"></div>
 							<div class="text">优惠信息</div>
@@ -64,7 +66,11 @@
 	</div>
 </template>
 <script>
+	import star from 'components/star/star.vue';
 	export default {
+		components: {
+			star
+		},
 		props: {
 			seller: {
 				type: Object
@@ -237,9 +243,10 @@
 						font-weight: 700
 						line-height: 16px
 						text-align: center
-					.star
-						margin: 16px auto 0 auto
-						height: 24px
+					.star-wrapper
+						margin-top: 16px
+						padding: 2px 0
+						text-align: center
 					.title
 						display: flex
 						width: 80%

@@ -1,33 +1,37 @@
 <template>
 	<div class="goods">
-		<div class="menu-wrapper">
+		<div class="menu-wrapper" ref="menuWrapper">
 			<ul>
-				<li v-for="item in goods" class="menu-item">
+				<li v-for="(item, index) in goods" class="menu-item" :class="{'current':currentIndex===index}">
 					<span class="text border-1px">
 						<span v-show="item.type>0" class="icon" :class="classMap[item.type]"></span>{{item.name}}
 					</span>
 				</li>
 			</ul>
 		</div>
-		<div class="foods-wrapper">
-			<ul class="foods-list">
-				<li v-for="item in goods" class="foods-item">
+		<div class="foods-wrapper" ref="foodsWrapper">
+			<ul>
+				<li v-for="item in goods" class="foods-list foods-list-hook">
 					<h1 class="title">{{item.name}}</h1>
-					<ul class="food-detail">
-						<li v-for="food in item.foods" class="detail border-1px">
+					<ul>
+						<li v-for="food in item.foods" class="food-item border-1px">
 							<div class="icon">
-								<img width="64" height="64" :src="food.icon">
+								<img width="57" height="57" :src="food.icon">
 							</div>
 							<div class="info">
 								<h1 class="name">{{food.name}}</h1>
 								<P class="description">{{food.description}}</P>
 								<p class="sell">
-									<span class="sellCount">月售{{food.sellCount}}份</span><span class="rating">好评率{{food.rating}}</span>
+									<span class="sellCount">月售{{food.sellCount}}份</span><span class="rating">好评率{{food.rating}}%</span>
 								</p>
 								<p class="price">
-									<span class="newprice">{{food.price}}</span>
-									<span v-show="food.oldprice" class="oldprice">{{food.oldprice}}</span>
+									<span class="now">￥{{food.price}}</span><span v-show="food.oldPrice" class="old">￥{{food.oldPrice}}</span>
 								</p>
+							</div>
+							<div class="button">
+								<i class="icon-remove_circle_outline"></i>
+								<span></span>
+								<i class="icon-add_circle"></i>
 							</div>
 						</li>
 					</ul>
@@ -37,6 +41,7 @@
 	</div>
 </template>
 <script type="text/ecmascript-6">
+	import BScroll from 'better-scroll';
 	const ERR_OK = 0;
 	export default {
 		props: {
@@ -46,28 +51,67 @@
 		},
 		data() {
 			return {
-				goods: []
+				goods: [],
+				listHeight: [],
+				scrollY: 0
 			};
+		},
+		computed: {
+			currentIndex() {
+				for (let i = 0; i < this.listHeight.length; i++) {
+					let height1 = this.listHeight[i];
+					let height2 = this.listHeight[i + 1];
+					if (!height2 || (this.scrollY >= height1 && this.scrollY < height2)) {
+						return i;
+					}
+				}
+				return 0;
+			}
 		},
 		created() {
 			this.$http.get('/api/goods').then((response) => {
 				response = response.body;
 				if (response.errno === ERR_OK) {
 					this.goods = response.data;
+					this.$nextTick(() => {
+						this._initScroll();
+						this._calculateHeight();
+					});
 				}
 			});
 			this.classMap = ['decrease', 'discount', 'special', 'invoice', 'guarantee'];
+		},
+		methods: {
+			_initScroll() {
+				this.menuScroll = new BScroll(this.$refs.menuWrapper, {});
+				this.foodsScroll = new BScroll(this.$refs.foodsWrapper, {
+					probeType: 3
+				});
+				this.foodsScroll.on('scroll', (pos) => {
+					this.scrollY = Math.abs(Math.round(pos.y));
+				});
+			},
+			_calculateHeight() {
+				let foodList = this.$refs.foodsWrapper.getElementsByClassName('food-list-hook');
+				let height = 0;
+				this.listHeight.push(height);
+				for (let i = 0; i < foodList.length; i++) {
+					let item = foodList[i];
+					height += item.clientHeight;
+					this.listHeight.push(height);
+				}
+			}
 		}
 	};
 </script>
 <style lang="stylus" rel="stylesheet/stylus">
 	@import '../../common/stylus/mixin.styl'
+	@import '../../common/stylus/base.styl'
 	.goods
 		display: flex
 		position: absolute
 		top: 174px
 		bottom: 46px
-		width: 100%
 		overflow: hidden
 		.menu-wrapper
 			flex: 0 0 80px
@@ -78,6 +122,14 @@
 				width: 56px
 				height: 54px
 				padding: 0 12px
+				&.current
+					position: relative
+					margin-top: -1px
+					z-index: 10
+					background-color: #fff
+					font-weight: 700
+					.text
+						border-none()
 				.text
 					display: table-cell
 					vertical-align: middle
@@ -108,55 +160,59 @@
 		.foods-wrapper
 			flex: 1
 			.foods-list
-				.foods-item
-					.title
-						height: 26px
-						font-size: 12px
-						color: rgb(147, 153, 159)
-						line-height: 26px
-						background-color: #f3f5f7
-						padding-left: 14px
-						border-left: 3px solid #d9dde1
-					.food-detail
-						.detail
-							padding: 18px
-							font-size: 0
-							border-1px(rgba(7, 17, 27, 0.1))
-							.icon
-								display: inline-block
-								vertical-align: top
-								width: 64px
-								height: 64px
-								border-radius: 2px
-								margin-right: 10px
-								overflow: hidden
-							.info
-								display: inline-block
-								.name
-									font-size: 14px
-									line-height: 14px
-									color: rgb(7, 17, 27)
-									margin-bottom: 8px
-								.description
-									font-size: 10px
-									line-height: 10px
-									color: rgb(147, 153, 159)
-									margin-bottom: 8px
-								.sell
-									font-size: 10px
-									line-height: 10px
-									color: rgb(147, 153, 159)
-									.sellCount
-										padding-right: 12px
-								.price
-									.newprice
-										font-size: 14px
-										line-height: 24px
-										font-weight: 700
-										color: red
-										padding-right: 8px
-									.oldprice
-										font-size: 10px
-										font-weight: normal
-										color: rgb(147, 153, 159)
+				.title
+					height: 26px
+					font-size: 12px
+					color: rgb(147, 153, 159)
+					line-height: 26px
+					background-color: #f3f5f7
+					padding-left: 14px
+					border-left: 2px solid #d9dde1
+				.food-item
+					display: flex
+					margin: 18px
+					padding-bottom: 18px
+					font-size: 0
+					border-1px(rgba(7, 17, 27, 0.1))
+					&:last-child
+						border-none()
+						margin-bottom: 0
+					.icon
+						flex: 0 0 57px
+						vertical-align: top
+						width: 57px
+						height: 57px
+						border-radius: 2px
+						margin-right: 10px
+						overflow: hidden
+					.info
+						flex: 1
+						.name
+							font-size: 14px
+							line-height: 14px
+							color: rgb(7, 17, 27)
+							margin: 2px 0 8px 0
+						.description
+							font-size: 10px
+							line-height: 12px
+							color: rgb(147, 153, 159)
+							margin-bottom: 8px
+						.sell
+							font-size: 10px
+							line-height: 10px
+							color: rgb(147, 153, 159)
+							.sellCount
+								padding-right: 12px
+						.price
+							.now
+								font-size: 14px
+								line-height: 24px
+								font-weight: 700
+								color: rgb(240, 20, 20)
+								padding-right: 8px
+							.old
+								text-decoration: line-through
+								font-size: 10px
+								font-weight: normal
+								color: rgb(147, 153, 159)
 </style>

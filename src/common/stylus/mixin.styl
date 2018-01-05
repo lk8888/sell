@@ -8,7 +8,9 @@ border-1px($color)
 		bottom: 0
 		width: 100%
 		border-top: 1px solid $color
-
+border-none()
+	&:after
+		display: none
 bg-image($url)
 	background-image: url($url+"@2x.png")
 	@media(device-pixel-ratio: 3),(-webkit-device-pixel-ratio: 3)

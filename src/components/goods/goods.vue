@@ -2,7 +2,7 @@
 	<div class="goods">
 		<div class="menu-wrapper" ref="menuWrapper">
 			<ul>
-				<li v-for="(item, index) in goods" class="menu-item" :class="{'current':currentIndex===index}">
+				<li v-for="(item,index) in goods" class="menu-item menu-list-hook" :class="{'current':currentIndex===index}" @click="selectMenu(index, $event)">
 					<span class="text border-1px">
 						<span v-show="item.type>0" class="icon" :class="classMap[item.type]"></span>{{item.name}}
 					</span>
@@ -11,7 +11,7 @@
 		</div>
 		<div class="foods-wrapper" ref="foodsWrapper">
 			<ul>
-				<li v-for="item in goods" class="foods-list foods-list-hook">
+				<li v-for="item in goods" class="foods-list food-list-hook">
 					<h1 class="title">{{item.name}}</h1>
 					<ul>
 						<li v-for="food in item.foods" class="food-item border-1px">
@@ -28,22 +28,22 @@
 									<span class="now">￥{{food.price}}</span><span v-show="food.oldPrice" class="old">￥{{food.oldPrice}}</span>
 								</p>
 							</div>
-							<div class="button">
-								<i class="icon-remove_circle_outline"></i>
-								<span></span>
-								<i class="icon-add_circle"></i>
-							</div>
 						</li>
 					</ul>
 				</li>
 			</ul>
 		</div>
+		<shopcart :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></shopcart>
 	</div>
 </template>
-<script type="text/ecmascript-6">
+<script>
+	import shopcart from 'components/shopcart/shopcart.vue';
 	import BScroll from 'better-scroll';
 	const ERR_OK = 0;
 	export default {
+		components: {
+			shopcart
+		},
 		props: {
 			seller: {
 				type: Object
@@ -58,10 +58,13 @@
 		},
 		computed: {
 			currentIndex() {
+				let menuList = this.$refs.menuWrapper.getElementsByClassName('menu-list-hook');
 				for (let i = 0; i < this.listHeight.length; i++) {
 					let height1 = this.listHeight[i];
 					let height2 = this.listHeight[i + 1];
 					if (!height2 || (this.scrollY >= height1 && this.scrollY < height2)) {
+						let el = menuList[i];
+						this.menuScroll.scrollToElement(el, 300);
 						return i;
 					}
 				}
@@ -82,8 +85,18 @@
 			this.classMap = ['decrease', 'discount', 'special', 'invoice', 'guarantee'];
 		},
 		methods: {
+			selectMenu(index, event) {
+				if (!event._constructed) {
+					return;
+				}
+				let foodList = this.$refs.foodsWrapper.getElementsByClassName('food-list-hook');
+				let el = foodList[index];
+				this.foodsScroll.scrollToElement(el, 300);
+			},
 			_initScroll() {
-				this.menuScroll = new BScroll(this.$refs.menuWrapper, {});
+				this.menuScroll = new BScroll(this.$refs.menuWrapper, {
+					click: true
+				});
 				this.foodsScroll = new BScroll(this.$refs.foodsWrapper, {
 					probeType: 3
 				});
@@ -111,7 +124,8 @@
 		display: flex
 		position: absolute
 		top: 174px
-		bottom: 46px
+		bottom: 48px
+		width: 100%
 		overflow: hidden
 		.menu-wrapper
 			flex: 0 0 80px
@@ -122,14 +136,15 @@
 				width: 56px
 				height: 54px
 				padding: 0 12px
+				line-height: 14px
 				&.current
 					position: relative
 					margin-top: -1px
 					z-index: 10
 					background-color: #fff
-					font-weight: 700
 					.text
 						border-none()
+						font-weight: 400	
 				.text
 					display: table-cell
 					vertical-align: middle
@@ -157,7 +172,7 @@
 							bg-image('invoice_3')
 						&.guarantee
 							bg-image('guarantee_3')
-		.foods-wrapper
+		.foods-wrapper 	
 			flex: 1
 			.foods-list
 				.title

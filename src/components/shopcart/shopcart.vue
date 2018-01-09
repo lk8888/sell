@@ -3,15 +3,16 @@
 		<div class="content">
 			<div class="content-left">
 				<div class="logo-wrapper">
-					<div class="logo">
-						<i class="icon icon-shopping_cart"></i>
+					<div class="logo" :class="{'highlight':totalCount>0}">
+						<i class="icon icon-shopping_cart" :class="{'highlight':totalCount>0}"></i>
 					</div>
+					<div class="num" v-show="totalCount>0">{{totalCount}}</div>
 				</div>
-				<div class="price">￥0</div>
-				<div class="delivery">另需配送费￥{{deliveryPrice}}元</div>
+				<div class="price" :class="{'highlight':totalPrice>0}">￥{{totalPrice}}</div>
+				<div class="delivery">需配送费￥{{deliveryPrice}}元</div>
 			</div>
 			<div class="content-right">
-				<div class="pay">￥{{minPrice}}元起送</div>
+				<div class="pay" :class="{'highlight':totalPrice>=minPrice}">{{payDesc}}</div>
 			</div>
 		</div>
 	</div>
@@ -19,6 +20,17 @@
 <script>
 	export default {
 		props: {
+			selectFoods: {
+				type: Array,
+				default() {
+					return [
+						{
+							price: 10,
+							count: 2
+						}
+					];
+				}
+			},
 			deliveryPrice: {
 				type: Number,
 				default: 0
@@ -26,6 +38,32 @@
 			minPrice: {
 				type: Number,
 				default: 0
+			}
+		},
+		computed: {
+			totalPrice() {
+				let total = 0;
+				this.selectFoods.forEach((food) => {
+					total += food.price * food.count;
+				});
+				return total;
+			},
+			totalCount() {
+				let count = 0;
+				this.selectFoods.forEach((food) => {
+					count += food.count;
+				});
+				return count;
+			},
+			payDesc() {
+				if (this.totalPrice === 0) {
+					return `￥${this.totalPrice}起送`;
+				} else if (this.totalPrice < this.minPrice) {
+					let diff = this.minPrice - this.totalPrice;
+					return `还差￥${diff}起送`;
+				} else {
+					return '去结算';
+				}
 			}
 		}
 	};
@@ -42,9 +80,9 @@
 			font-size: 0
 			height: 48px
 			width: 100%
+			background-color: #141d27
 			.content-left
 				flex: 1
-				background-color: #141d27
 				.logo-wrapper
 					display: inline-block
 					position: relative
@@ -59,15 +97,33 @@
 					background-color: #141d27
 					vertical-align: top
 					.logo
-						width: 44px
-						height: 44px
+						width: 100%
+						height: 100%
 						border-radius: 50%
 						background-color: #2b343c
 						text-align: center
+						&.highlight
+							background-color: rgb(0, 160, 220)
 						.icon
 							font-size: 24px
 							line-height: 44px
 							color: #80858a
+							&.highlight
+								color: rgb(255, 255, 255)
+					.num
+						position: absolute
+						top: 0
+						right: 0
+						width: 24px
+						height: 16px
+						border-radius: 8px
+						font-size: 9px
+						font-weight: 700
+						color: rgb(255, 255, 255)
+						line-height: 16px
+						text-align: center
+						background-color: rgb(240, 20, 20)
+						box-shadow: 0px 4px 8px 0px rgb(0, 0, 0, 0.4)
 				.price
 					display: inline-block
 					vertical-align: top
@@ -79,6 +135,8 @@
 					padding-right: 12px
 					box-sizing: border-box
 					border-right: 1px solid rgba(255, 255, 255, 0.4)
+					&.highlight
+						color: rgb(255, 255, 255)
 				.delivery
 					display: inline-block
 					vertical-align: top
@@ -97,4 +155,7 @@
 					font-size: 12px
 					color: rgba(255, 255, 255, 0.4)
 					font-weight: 700
+					&.highlight
+						color: rgb(255, 255, 255)
+						background-color: #00b43c 
 </style>

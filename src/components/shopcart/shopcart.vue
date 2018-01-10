@@ -15,6 +15,15 @@
 				<div class="pay" :class="{'highlight':totalPrice>=minPrice}">{{payDesc}}</div>
 			</div>
 		</div>
+		<div class="ball-container">
+			<div v-for="ball in balls">
+				<transition name="drop">
+					<div class="ball" v-show="ball.show">
+						<div class="inner"></div>
+					</div>
+				</transition>
+			</div>
+		</div>
 	</div>
 </template>
 <script>
@@ -23,12 +32,7 @@
 			selectFoods: {
 				type: Array,
 				default() {
-					return [
-						{
-							price: 10,
-							count: 2
-						}
-					];
+					return [];
 				}
 			},
 			deliveryPrice: {
@@ -39,6 +43,27 @@
 				type: Number,
 				default: 0
 			}
+		},
+		data() {
+			return {
+				balls: [
+					{
+						show: false
+					},
+					{
+						show: false
+					},
+					{
+						show: false
+					},
+					{
+						show: false
+					},
+					{
+						show: false
+					}
+				]
+			};
 		},
 		computed: {
 			totalPrice() {
@@ -57,13 +82,18 @@
 			},
 			payDesc() {
 				if (this.totalPrice === 0) {
-					return `￥${this.totalPrice}起送`;
+					return `￥${this.minPrice}起送`;
 				} else if (this.totalPrice < this.minPrice) {
 					let diff = this.minPrice - this.totalPrice;
 					return `还差￥${diff}起送`;
 				} else {
 					return '去结算';
 				}
+			}
+		},
+		methods: {
+			drop(el) {
+				console.log(el);
 			}
 		}
 	};
@@ -158,4 +188,17 @@
 					&.highlight
 						color: rgb(255, 255, 255)
 						background-color: #00b43c 
+		.ball-container
+			.ball
+				position: fixed
+				left: 32px
+				bottom: 22px
+				z-index: 200
+				transition: all 0.4s
+				.inner
+					width: 16px
+					height: 16px
+					border-radius: 50%
+					background-color: rgb(0, 160, 220)
+					transition: all 0.4s
 </style>

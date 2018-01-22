@@ -39,7 +39,7 @@
 								<div class="pay">
 									<span class="price">￥{{food.price*food.count}}</span>
 									<div class="cartcontrol-wrapper">
-										<cartcontrol :food="food"  @cart="drop"></cartcontrol>
+										<cartcontrol :food="food"></cartcontrol>
 									</div>
 								</div>
 							</li>
@@ -204,7 +204,7 @@
 				if (this.totalPrice < this.minPrice) {
 					return;
 				}
-				window.alert(`总共需要支付￥${this.totalPrice}元`);
+				window.alert(`总共需要支付￥${this.totalPrice + this.deliveryPrice}元`);
 			},
 			empty() {
 				this.selectFoods.forEach((food) => {

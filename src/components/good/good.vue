@@ -1,38 +1,43 @@
 <template>
 	<transition name="slide">
-		<div class="good" v-show="showFlag">
-			 <div class="image-wrapper">
-			 	<img :src="food.image" />
-			 	<div class="icon" @click="hide">
-			 		<i class="icon-arrow_lift"></i>
-			 	</div>
-			 </div>
-			 <div class="info">
-			 	<h1 class="title">{{food.name}}</h1>
-			 	<div class="sell">
-			 		<span class="sellCount">月售{{food.sellCount}}份</span><span class="rating">好评率{{food.rating}}%</span>
-			 	</div>
-			 	<div class="price">
-			 		<span class="new">￥{{food.price}}</span>
-			 		<span class="old" v-show="food.oldPrice>0">￥{{food.oldPrice}}</span>
-			 	</div>
-			 	<div class="cartcontrol-wrapper" v-show="food.count>0">
-			 		<cartcontrol :food="food"></cartcontrol>
-			 	</div>
-			 	<div class="add" v-show="food.count===0 || !food.count">加入购物车</div>
-			 </div>
-			 <div class="intro" v-show="food.info">
-			 	<h1 class="title">商品介绍</h1>
-			 	<P class="text">{{food.info}}</P>
-			 </div>
-			 <div class="ratings">
-			 	<h1 class="title">商品评价</h1>
-			 </div>
+		<div class="good" v-show="showFlag" ref="good">
+			<div class="image-wrapper">
+				<img :src="food.image" />
+				<div class="icon" @click="hide">
+					<i class="icon-arrow_lift"></i>
+				</div>
+			</div>
+			<div class="info">
+				<h1 class="title">{{food.name}}</h1>
+				<div class="sell">
+					<span class="sellCount">月售{{food.sellCount}}份</span><span class="rating">好评率{food.rating}}%</span>
+				</div>
+				<div class="price">
+					<span class="new">￥{{food.price}}</span>
+					<span class="old" v-show="food.oldPrice>0">￥{{food.oldPrice}}</span>
+				</div>
+				<div class="cartcontrol-wrapper" v-show="food.count>0">
+					<cartcontrol :food="food"></cartcontrol>
+				</div>
+				<transition name="move">
+					<div class="add" v-show="food.count===0 || !food.count" @click="addFirst">加入购物车</div>
+				</transition>
+			</div>
+			<div class="intro" v-show="food.info">
+				<h1 class="title">商品介绍</h1>
+				<P class="text">{{food.info}}</P>
+			</div>
+			<div class="ratings">
+				<h1 class="title">商品评价</h1>
+			</div>
 		</div>
 	</transition>
 </template>
 <script>
 	import cartcontrol from 'components/cartcontrol/cartcontrol.vue';
+	import Vue from 'vue';
+	import BScroll from 'better-scroll';
+	import { eventBus } from 'components/event-bus.js';
 	export default {
 		components: {
 			cartcontrol
@@ -50,9 +55,19 @@
 		methods: {
 			show() {
 				this.showFlag = true;
+				this.BScroll = new BScroll(this.$refs.good, {
+					click: true
+				});
 			},
 			hide() {
 				this.showFlag = false;
+			},
+			addFirst(event) {
+				if (!event._constructed) {
+					return;
+				}
+				eventBus.$emit('cartAdd', event.target);
+				Vue.set(this.food, 'count', 1);
 			}
 		}
 	};
@@ -138,7 +153,6 @@
 				position: absolute
 				right: 18px
 				bottom: 18px
-				width: 74px
 				height: 24px
 				border-radius: 12px
 				background-color: rgb(0, 160, 220)
@@ -146,6 +160,16 @@
 				line-height: 24px
 				text-align: center
 				color: rgb(255, 255,255)
+				padding: 0 12px
+				box-sizing: border-box
+				z-index: 10
+				opacity: 1
+				&.move-enter-active, &.move-leave-active
+					transition: all 0.2s
+				&.move-enter, &.move-leave-to
+					opacity: 0
+				&.move-leave, &.move-enter-to
+					opacity: 1
 		.intro
 			.text
 				padding: 0 8px

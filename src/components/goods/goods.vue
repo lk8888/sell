@@ -28,7 +28,7 @@
 									<span class="now">￥{{food.price}}</span><span v-show="food.oldPrice" class="old">￥{{food.oldPrice}}</span>
 								</p>
 								<div class="cartcontrol-wrapper">
-									<cartcontrol :food="food" @cart="_drop"></cartcontrol>
+									<cartcontrol :food="food"></cartcontrol>
 								</div>
 							</div>
 						</li>
@@ -135,12 +135,6 @@
 					height += item.clientHeight;
 					this.listHeight.push(height);
 				}
-			},
-			_drop(target) {
-				// 体验优化，执行异步下落动画
-				this.$nextTick(() => {
-					this.$refs.shopcart.drop(target);
-				});
 			},
 			selectFood(food, event) {
 				if (!event._constructed) {

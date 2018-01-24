@@ -18,7 +18,7 @@
 				</div>
 			</div>
 			<div v-if = "seller.supports" class="supports-count" @click="showDetail">
-				<span class="count"> {{seller.supports.length}}个 </span>
+				<span class="count"> {{seller.supports.length}}个 </span>	
 				<i class="icon-keyboard_arrow_right"></i>
 			</div>
 		</div>

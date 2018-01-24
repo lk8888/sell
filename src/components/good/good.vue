@@ -1,46 +1,64 @@
 <template>
 	<transition name="slide">
-		<div class="good" v-show="showFlag" ref="good">
-			<div class="image-wrapper">
-				<img :src="food.image" />
-				<div class="icon" @click="hide">
-					<i class="icon-arrow_lift"></i>
+		<div class="good" v-show="showFlag" ref="food">
+			<div>
+				<div class="image-wrapper">
+					<img :src="food.image" />
+					<div class="icon" @click="hide">
+						<i class="icon-arrow_lift"></i>
+					</div>
 				</div>
-			</div>
-			<div class="info">
-				<h1 class="title">{{food.name}}</h1>
-				<div class="sell">
-					<span class="sellCount">月售{{food.sellCount}}份</span><span class="rating">好评率{food.rating}}%</span>
+				<div class="info">
+					<h1 class="title">{{food.name}}</h1>
+					<div class="sell">
+						<span class="sellCount">月售{{food.sellCount}}份</span><span class="sellRating">好评率{{food.rating}}%</span>
+					</div>
+					<div class="price">
+						<span class="new">￥{{food.price}}</span>
+						<span class="old" v-show="food.oldPrice>0">￥{{food.oldPrice}}</span>
+					</div>
+					<div class="cartcontrol-wrapper" v-show="food.count>0">
+						<cartcontrol :food="food"></cartcontrol>
+					</div>
+					<transition name="move">
+						<div class="add" v-show="food.count===0 || !food.count" @click="addFirst">加入购物车</div>
+					</transition>
 				</div>
-				<div class="price">
-					<span class="new">￥{{food.price}}</span>
-					<span class="old" v-show="food.oldPrice>0">￥{{food.oldPrice}}</span>
+				<div class="intro" v-show="food.info">
+					<h1 class="title">商品介绍</h1>
+					<P class="text">{{food.info}}</P>
 				</div>
-				<div class="cartcontrol-wrapper" v-show="food.count>0">
-					<cartcontrol :food="food"></cartcontrol>
+				<div class="ratings">
+					<h1 class="title">商品评价</h1>
+					<rating :food="food"></rating>
+					<div class="detail">
+						<ul>
+							<li class="item" v-for="item in food.ratings">
+								<div class="item-info">
+									<p class="time">{{item.rateTime}}</p>
+									<p class="user"><span class="username">{{item.username}}</span><img class="avatar" :src="item.avatar" width="12" height="12"></img></p>
+								</div>
+								<p class="content">
+									<i class="icon" :class="[item.rateType===0?'icon-thumb_down':'icon-thumb_up']"></i><span class="text">{{item.text}}</span>
+								</p>
+							</li>
+						</ul>
+					</div>
 				</div>
-				<transition name="move">
-					<div class="add" v-show="food.count===0 || !food.count" @click="addFirst">加入购物车</div>
-				</transition>
-			</div>
-			<div class="intro" v-show="food.info">
-				<h1 class="title">商品介绍</h1>
-				<P class="text">{{food.info}}</P>
-			</div>
-			<div class="ratings">
-				<h1 class="title">商品评价</h1>
 			</div>
 		</div>
 	</transition>
 </template>
 <script>
-	import cartcontrol from 'components/cartcontrol/cartcontrol.vue';
 	import Vue from 'vue';
 	import BScroll from 'better-scroll';
+	import cartcontrol from 'components/cartcontrol/cartcontrol.vue';
+	import rating from 'components/rating/rating.vue';
 	import { eventBus } from 'components/event-bus.js';
 	export default {
 		components: {
-			cartcontrol
+			cartcontrol,
+			rating
 		},
 		props: {
 			food: {
@@ -55,8 +73,14 @@
 		methods: {
 			show() {
 				this.showFlag = true;
-				this.BScroll = new BScroll(this.$refs.good, {
-					click: true
+				this.$nextTick(() => {
+					if (!this.scroll) {
+						this.scroll = new BScroll(this.$refs.food, {
+							click: true
+						});
+					} else {
+						this.scroll.refresh();
+					}
 				});
 			},
 			hide() {
@@ -82,7 +106,7 @@
 		width: 100%
 		background: #f3f5f7
 		z-index: 30
-		overflow: auto
+		overflow: hidden
 		transform: translate3d(0, 0, 0)
 		&.slide-enter-active, &.slide-leave-active
 			transition: all 0.2s linear
@@ -120,7 +144,6 @@
 			font-weight: 700
 			color: rgb(7, 17, 27)
 			line-height: 14px
-			margin-bottom: 6px
 		.info
 			position: relative
 			.title
@@ -171,6 +194,8 @@
 				&.move-leave, &.move-enter-to
 					opacity: 1
 		.intro
+			.title
+				margin-bottom: 6px
 			.text
 				padding: 0 8px
 				font-size: 12px
@@ -181,5 +206,42 @@
 			background-color: #fff
 			border-top: 1px solid rgba(7, 17, 27, 0.1)
 			.title
-				padding: 18px 0 0 22px			
+				padding: 18px 0 0 18px
+			.detail
+				padding: 0 18px
+				.item
+					padding: 16px 0
+					border-1px(rgba(7, 17, 27, 0.1))
+					&:last-child
+						border-none()
+					.item-info
+						margin-bottom: 6px
+						overflow: hidden
+						.time
+							float: left
+							font-size: 10px
+							line-height: 12px
+							color: rgb(147, 153, 159)
+						.user
+							float: right
+							.username
+								font-size: 10px
+								line-height: 12px
+								color: rgb(147, 153, 159)
+								margin-right: 6px
+							.avatar
+								border-radius: 50%						
+					.content
+						.icon
+							font-size: 12px
+							line-height: 24px
+							margin-right: 4px						
+							&.icon-thumb_down
+								color: rgb(147, 153, 159)
+							&.icon-thumb_up
+								color: rgb(0, 160, 220)
+						.text
+							font-size: 12px
+							line-height: 16px
+							color: rgb(7, 17, 27)
 </style>

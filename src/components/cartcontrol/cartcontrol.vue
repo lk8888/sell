@@ -13,7 +13,7 @@
 </template>
 <script>
 	import Vue from 'vue';
-	import { eventBus } from 'components/event-bus.js';
+	import { eventBus } from '../../common/js/event-bus.js';
 	export default {
 		props: {
 			food: {

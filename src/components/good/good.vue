@@ -30,12 +30,12 @@
 				</div>
 				<div class="ratings">
 					<h1 class="title">商品评价</h1>
-					<rating :food="food"></rating>
+					<ratingSelect :ratings="food.ratings" :select-type="selectType" :has-content="hasContent" :desc="desc"></ratingSelect>
 					<div class="detail">
 						<ul>
 							<li class="item" v-for="item in food.ratings">
 								<div class="item-info">
-									<p class="time">{{item.rateTime}}</p>
+									<p class="time">{{item.rateTime | formatDate}}</p>
 									<p class="user"><span class="username">{{item.username}}</span><img class="avatar" :src="item.avatar" width="12" height="12"></img></p>
 								</div>
 								<p class="content">
@@ -53,12 +53,16 @@
 	import Vue from 'vue';
 	import BScroll from 'better-scroll';
 	import cartcontrol from 'components/cartcontrol/cartcontrol.vue';
-	import rating from 'components/rating/rating.vue';
-	import { eventBus } from 'components/event-bus.js';
+	import ratingSelect from 'components/ratingSelect/ratingSelect.vue';
+	import { eventBus } from '../../common/js/event-bus.js';
+	import { formatDate } from '../../common/js/date.js';
+	// const POSITION = 0;
+	// const NEGATIVE = 1;
+	const ALL = 2;
 	export default {
 		components: {
 			cartcontrol,
-			rating
+			ratingSelect
 		},
 		props: {
 			food: {
@@ -67,12 +71,22 @@
 		},
 		data() {
 			return {
-				showFlag: false
+				showFlag: false,
+				selectType: ALL,
+				hasContent: false,
+				desc: {
+					all: '全部',
+					position: '推荐',
+					negative: '吐槽'
+				}
+
 			};
 		},
 		methods: {
 			show() {
 				this.showFlag = true;
+				this.selectType = ALL;
+				this.hasContent = false;
 				this.$nextTick(() => {
 					if (!this.scroll) {
 						this.scroll = new BScroll(this.$refs.food, {
@@ -92,6 +106,12 @@
 				}
 				eventBus.$emit('cartAdd', event.target);
 				Vue.set(this.food, 'count', 1);
+			}
+		},
+		filters: {
+			formatDate(time) {
+				let date = new Date(time);
+				return formatDate(date, 'yyyy-MM-dd hh:mm');
 			}
 		}
 	};

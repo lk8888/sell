@@ -56,7 +56,7 @@
 <script>
 	import cartcontrol from 'components/cartcontrol/cartcontrol.vue';
 	import BScroll from 'better-scroll';
-	import { eventBus } from 'components/event-bus.js';
+	import { eventBus } from '../../common/js/event-bus.js';
 	export default {
 		components: {
 			cartcontrol

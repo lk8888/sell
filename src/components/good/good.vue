@@ -24,10 +24,12 @@
 						<div class="add" v-show="food.count===0 || !food.count" @click="addFirst">加入购物车</div>
 					</transition>
 				</div>
+				<split v-show="food.info"></split>
 				<div class="intro" v-show="food.info">
 					<h1 class="title">商品介绍</h1>
 					<P class="text">{{food.info}}</P>
 				</div>
+				<split></split>
 				<div class="ratings">
 					<h1 class="title">商品评价</h1>
 					<ratingSelect :ratings="food.ratings" :select-type="selectType" :has-content="hasContent" :desc="desc"></ratingSelect>
@@ -54,6 +56,7 @@
 	import BScroll from 'better-scroll';
 	import cartcontrol from 'components/cartcontrol/cartcontrol.vue';
 	import ratingSelect from 'components/ratingSelect/ratingSelect.vue';
+	import split from 'components/split/split.vue';
 	import { eventBus } from '../../common/js/event-bus.js';
 	import { formatDate } from '../../common/js/date.js';
 	// const POSITION = 0;
@@ -62,7 +65,8 @@
 	export default {
 		components: {
 			cartcontrol,
-			ratingSelect
+			ratingSelect,
+			split
 		},
 		props: {
 			food: {
@@ -113,6 +117,18 @@
 				let date = new Date(time);
 				return formatDate(date, 'yyyy-MM-dd hh:mm');
 			}
+		},
+		created() {
+			eventBus.$on('ratingType-select', (type) => {
+				this.$nextTick(() => {
+					this.selectType = type;
+				});
+			});
+			eventBus.$on('contentToggle', (flag) => {
+				this.$nextTick(() => {
+					this.hasContent = flag;
+				});
+			});
 		}
 	};
 </script>
@@ -124,7 +140,7 @@
 		left: 0
 		bottom: 48px
 		width: 100%
-		background: #f3f5f7
+		background-color: #fff
 		z-index: 30
 		overflow: hidden
 		transform: translate3d(0, 0, 0)
@@ -155,10 +171,7 @@
 					color: #fff
 		.info, .intro
 			padding: 18px
-			margin-bottom: 16px
 			background-color: #fff		
-			border-top: 1px solid rgba(7, 17, 27, 0.1)
-			border-bottom: 1px solid rgba(7, 17, 27, 0.1)
 		.title
 			font-size: 14px
 			font-weight: 700
@@ -224,7 +237,6 @@
 				line-height: 24px
 		.ratings
 			background-color: #fff
-			border-top: 1px solid rgba(7, 17, 27, 0.1)
 			.title
 				padding: 18px 0 0 18px
 			.detail

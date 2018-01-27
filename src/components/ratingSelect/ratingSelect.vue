@@ -1,24 +1,25 @@
 <template>
 	<div class="ratingSelect">
 		<div class="select-type border-1px">
-			<p class="block positive" :class="{'active':selectType===2}">
+			<p class="block positive" :class="{'active':changeType===2}" @click="selected(2,$event)">
 				<span class="text">{{desc.all}}</span><span class="count">{{ratings.length}}</span>
 			</p>
-			<p class="block positive" :class="{'active':selectType===0}">
-				<span class="text">{{desc.position}}</span><span class="count">{{recommendCount}}</span>
+			<p class="block positive" :class="{'active':changeType===0}" @click="selected(0,$event)">
+				<span class="text">{{desc.position}}</span><span class="count">{{positives.length}}</span>
 			</p>
-			<p class="block negative" :class="{'active':selectType===1}">
-				<span class="text">{{desc.negative}}</span><span class="count">{{complainCount}}</span>
+			<p class="block negative" :class="{'active':changeType===1}" @click="selected(1,$event)">
+				<span class="text">{{desc.negative}}</span><span class="count">{{negatives.length}}</span>
 			</p>
 		</div>
 		<div class="content">
-			<i class="icon-check_circle"></i><span class="text">只看有内容的评价</span>
+			<i class="icon-check_circle" :class="{'active':toggleFlag===true}" @click="toggleContent"></i><span class="text" @click="toggleContent">只看有内容的评价</span>
 		</div>
 	</div>
 </template>
 <script>
-	// const POSITIVE = 0;
-	// const NEGATIVE = 1;
+	import { eventBus } from '../../common/js/event-bus.js';
+	const POSITIVE = 0;
+	const NEGATIVE = 1;
 	const ALL = 2;
 	export default {
 		props: {
@@ -47,66 +48,38 @@
 				}
 			}
 		},
+		data() {
+			return {
+				changeType: this.selectType,
+				toggleFlag: this.hasContent
+			};
+		},
 		computed: {
-			recommendCount() {
-				let count = 0;
-				let len = this.ratings.length;
-				for (let i = 0; i < len; i++) {
-					if (this.ratings[i].rateType === 1) {
-						count++;
-					}
-				}
-				return count;
+			positives() {
+				return this.ratings.filter((rating) => {
+					return rating.rateType === POSITIVE;
+				});
 			},
-			complainCount() {
-				let count = 0;
-				let len = this.ratings.length;
-				for (let i = 0; i < len; i++) {
-					if (this.ratings[i].rateType === 0) {
-						count++;
-					}
-				}
-				return count;
+			negatives() {
+				return this.ratings.filter((rating) => {
+					return rating.rateType === NEGATIVE;
+				});
 			}
 		},
 		methods: {
-			all() {
-				this.selectType = [];
-				let len = this.ratings.length;
-				for (let i = 0; i < len; i++) {
-					this.selectType.push(this.ratings[i]);
+			selected(type, event) {
+				if (!event._constructed) {
+					return;
 				}
-				this.$emit('transfer', this.selectType);
+				this.changeType = type;
+				eventBus.$emit('ratingType-select', type);
 			},
-			recommend() {
-				this.selectType = [];
-				let len = this.ratings.length;
-				for (let i = 0; i < len; i++) {
-					if (this.ratings[i].rateType === 1) {
-						this.selectType.push(this.ratings[i]);
-					}
+			toggleContent() {
+				if (!event._constructed) {
+					return;
 				}
-				this.$emit('transfer', this.selectType);
-			},
-			complain() {
-				this.selectType = [];
-				let len = this.ratings.length;
-				for (let i = 0; i < len; i++) {
-					if (this.ratings[i].rateType === 0) {
-						this.selectType.push(this.ratings[i]);
-					}
-				}
-				this.$emit('transfer', this.selectType);
-			},
-			hasText() {
-				this.selectType = [];
-				let len = this.ratings.length;
-				for (let i = 0; i < len; i++) {
-					if (this.ratings[i].text) {
-						this.selectType.push(this.ratings[i]);
-					}
-				}
-				this.$emit('transfer', this.selectType);
+				this.toggleFlag = !this.toggleFlag;
+				eventBus.$emit('contentToggle', this.toggleFlag);
 			}
 		}
 	};
@@ -148,6 +121,8 @@
 				line-height: 24px
 				color: rgb(147, 153, 159)
 				padding-right: 4px
+				&.active
+					color: #00c850
 			.text
 				display: inline-block
 				vertical-align: top

@@ -33,18 +33,19 @@
 				<div class="ratings">
 					<h1 class="title">商品评价</h1>
 					<ratingSelect :ratings="food.ratings" :select-type="selectType" :has-content="hasContent" :desc="desc"></ratingSelect>
-					<div class="detail">
-						<ul>
-							<li class="item" v-for="item in food.ratings">
-								<div class="item-info">
-									<p class="time">{{item.rateTime | formatDate}}</p>
-									<p class="user"><span class="username">{{item.username}}</span><img class="avatar" :src="item.avatar" width="12" height="12"></img></p>
+					<div class="rating-wrapper">
+						<ul v-show="food.ratings && food.ratings.length">
+							<li v-show="needShow(item.rateType,item.text)" class="rating-item" v-for="item in food.ratings">
+								<div class="user">
+									<span class="username">{{item.username}}</span><img class="avatar" :src="item.avatar" width="12" height="12"></img>
 								</div>
+								<div class="time">{{item.rateTime | formatDate}}</div>
 								<p class="content">
-									<i class="icon" :class="[item.rateType===0?'icon-thumb_down':'icon-thumb_up']"></i><span class="text">{{item.text}}</span>
+									<i class="icon" :class="[item.rateType===1?'icon-thumb_down':'icon-thumb_up']"></i><span class="text">{{item.text}}</span>
 								</p>
 							</li>
 						</ul>
+						<div class="no-rating" v-show="!food.ratings || !food.ratings.length">暂无评论</div>
 					</div>
 				</div>
 			</div>
@@ -110,6 +111,16 @@
 				}
 				eventBus.$emit('cartAdd', event.target);
 				Vue.set(this.food, 'count', 1);
+			},
+			needShow(type, text) {
+				if (this.hasContent && !text) {
+					return false;
+				}
+				if (this.selectType === ALL) {
+					return true;
+				} else {
+					return type === this.selectType;
+				}
 			}
 		},
 		filters: {
@@ -120,13 +131,15 @@
 		},
 		created() {
 			eventBus.$on('ratingType-select', (type) => {
+				this.selectType = type;
 				this.$nextTick(() => {
-					this.selectType = type;
+					this.scroll.refresh();
 				});
 			});
 			eventBus.$on('contentToggle', (flag) => {
+				this.hasContent = flag;
 				this.$nextTick(() => {
-					this.hasContent = flag;
+					this.scroll.refresh();
 				});
 			});
 		}
@@ -239,41 +252,41 @@
 			background-color: #fff
 			.title
 				padding: 18px 0 0 18px
-			.detail
+			.rating-wrapper
 				padding: 0 18px
-				.item
+				.rating-item
+					position: relative
 					padding: 16px 0
 					border-1px(rgba(7, 17, 27, 0.1))
 					&:last-child
 						border-none()
-					.item-info
-						margin-bottom: 6px
-						overflow: hidden
-						.time
-							float: left
+					.user
+						position: absolute
+						top: 16px
+						right: 0
+						.username
+							display: inline-block
+							vertical-align: top
+							margin-right: 6px
 							font-size: 10px
 							line-height: 12px
 							color: rgb(147, 153, 159)
-						.user
-							float: right
-							.username
-								font-size: 10px
-								line-height: 12px
-								color: rgb(147, 153, 159)
-								margin-right: 6px
-							.avatar
-								border-radius: 50%						
+						.avatar
+							border-radius: 50%
+					.time
+						margin-bottom: 6px
+						line-height: 12px
+						font-size: 10px
+						color: rgb(147, 153, 159)						
 					.content
+						font-size: 12px
+						line-height: 16px
 						.icon
-							font-size: 12px
-							line-height: 24px
 							margin-right: 4px						
 							&.icon-thumb_down
 								color: rgb(147, 153, 159)
 							&.icon-thumb_up
 								color: rgb(0, 160, 220)
 						.text
-							font-size: 12px
-							line-height: 16px
 							color: rgb(7, 17, 27)
 </style>

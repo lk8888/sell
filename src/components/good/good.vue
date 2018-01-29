@@ -289,4 +289,8 @@
 								color: rgb(0, 160, 220)
 						.text
 							color: rgb(7, 17, 27)
+				.no-rating
+					padding: 16px 0
+					font-size: 12px
+					color: rgb(147, 153, 159)
 </style>

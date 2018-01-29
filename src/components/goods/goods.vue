@@ -36,7 +36,7 @@
 				</li>
 			</ul>
 		</div>
-		<good :food="selectedFood" ref="good"></good>
+		<food :food="selectedFood" ref="good"></food>
 		<shopcart ref="shopcart" :select-foods="selectFoods" :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></shopcart>
 	</div>
 </template>
@@ -44,13 +44,13 @@
 	import shopcart from 'components/shopcart/shopcart.vue';
 	import cartcontrol from 'components/cartcontrol/cartcontrol.vue';
 	import BScroll from 'better-scroll';
-	import good from 'components/good/good.vue';
+	import food from 'components/food/food.vue';
 	const ERR_OK = 0;
 	export default {
 		components: {
 			shopcart,
 			cartcontrol,
-			good
+			food
 		},
 		props: {
 			seller: {

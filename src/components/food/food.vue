@@ -1,6 +1,6 @@
 <template>
 	<transition name="slide">
-		<div class="good" v-show="showFlag" ref="food">
+		<div class="food" v-show="showFlag" ref="food">
 			<div>
 				<div class="image-wrapper">
 					<img :src="food.image" />
@@ -30,7 +30,7 @@
 					<P class="text">{{food.info}}</P>
 				</div>
 				<split></split>
-				<div class="ratings">
+				<div class="rating">
 					<h1 class="title">商品评价</h1>
 					<ratingSelect :ratings="food.ratings" :select-type="selectType" :has-content="hasContent" :desc="desc"></ratingSelect>
 					<div class="rating-wrapper">
@@ -147,7 +147,7 @@
 </script>
 <style lang="stylus" rel="stylesheet/stylus">
 	@import '../../common/stylus/mixin.styl'
-	.good
+	.food
 		position: fixed
 		top: 0
 		left: 0
@@ -248,7 +248,7 @@
 				font-weight: 200
 				color: rgb(77, 85, 93)
 				line-height: 24px
-		.ratings
+		.rating
 			background-color: #fff
 			.title
 				padding: 18px 0 0 18px

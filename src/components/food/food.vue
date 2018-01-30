@@ -81,7 +81,7 @@
 				hasContent: false,
 				desc: {
 					all: '全部',
-					position: '推荐',
+					positive: '推荐',
 					negative: '吐槽'
 				}
 

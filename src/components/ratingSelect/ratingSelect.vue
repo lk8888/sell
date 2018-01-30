@@ -5,7 +5,7 @@
 				<span class="text">{{desc.all}}</span><span class="count">{{ratings.length}}</span>
 			</p>
 			<p class="block positive" :class="{'active':changeType===0}" @click="selected(0,$event)">
-				<span class="text">{{desc.position}}</span><span class="count">{{positives.length}}</span>
+				<span class="text">{{desc.positive}}</span><span class="count">{{positives.length}}</span>
 			</p>
 			<p class="block negative" :class="{'active':changeType===1}" @click="selected(1,$event)">
 				<span class="text">{{desc.negative}}</span><span class="count">{{negatives.length}}</span>

@@ -10,7 +10,7 @@
 						<div class="num" v-show="totalCount>0">{{totalCount}}</div>
 					</div>
 					<div class="price" :class="{'highlight':totalPrice>0}">￥{{totalPrice}}</div>
-					<div class="delivery">需配送费￥{{deliveryPrice}}元</div>
+					<div class="delivery">另需配送费￥{{deliveryPrice}}元</div>
 				</div>
 				<div class="content-right" @click.stop.prevent="pay">
 					<div class="pay" :class="{'highlight':totalPrice>=minPrice}">{{payDesc}}</div>
@@ -297,6 +297,8 @@
 					line-height: 24px
 					font-size: 10px
 					color: rgba(255, 255, 255, 0.4)
+					@media only screen and (max-width: 320px)
+						margin-left: 3px
 			.content-right
 				flex: 0 0 105px
 				width: 105px

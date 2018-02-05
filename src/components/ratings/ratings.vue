@@ -1,24 +1,24 @@
 <template>
 	<div class="ratings" ref="ratings">
 		<div class="ratins-content">
-			<div class="score">
-				<div class="score-average">
-					<p class="score-total">{{seller.score}}</p>
-					<p class="score-text">综合评分</p>
-					<p class="rank-rate">高于周边商家{{seller.rankRate}}%</p>
+			<div class="overview">
+				<div class="overview-left">
+					<p class="score">{{seller.score}}</p>
+					<p class="text">综合评分</p>
+					<p class="rank">高于周边商家{{seller.rankRate}}%</p>
 				</div>
-				<div class="score-detail">
-					<div class="server">
+				<div class="overview-right">
+					<div class="score-wrapper">
 						<span class="text">服务态度</span>
 						<div class="star-wrapper"><star :size="36" :score="seller.serviceScore"></star></div>
-						<span class="service-score">{{seller.serviceScore}}</span>
+						<span class="score">{{seller.serviceScore}}</span>
 					</div>
-					<div class="server">
-						<span class="text">服务态度</span>
+					<div class="score-wrapper">
+						<span class="text">商品评分</span>
 						<div class="star-wrapper"><star :size="36" :score="seller.foodScore"></star></div>
-						<span class="service-score">{{seller.foodScore}}</span>
+						<span class="score">{{seller.foodScore}}</span>
 					</div>
-					<div class="server">
+					<div class="delivery-wrapper">
 						<span class="text">送达时间</span>
 						<span class="delivery-time">{{seller.deliveryTime}}分钟</span>
 					</div>
@@ -27,28 +27,25 @@
 			<split></split>
 			<ratingSelect :ratings="ratings" :select-type="selectType" :hasContent="hasContent" ></ratingSelect>
 			<div class="rating-detail">
-				<ul>
-					<li class="rating-item border-1px" v-for="item in ratings">
+				<ul v-show="ratings && ratings.length">
+					<li class="rating-item border-1px" v-for="item in ratings" v-show="needShow(item.rateType,item.text)">
 						<div class="avatar"><img :src="item.avatar" width="28" height="28" /></div>
-						<div class="time">{{item.rateTime | formatDate}}</div>
 						<div class="content">
+							<div class="time">{{item.rateTime | formatDate}}</div>
 							<div class="user">{{item.username}}</div>
-							<div class="info">
-								<div class="star-wrapper">
-									<star :size="24" :score="item.score"></star>
-								</div>
+							<div class="star-wrapper">
+								<star :size="24" :score="item.score"></star>
 								<span class="delivery-time" v-show="item.deliveryTime">{{item.deliveryTime}}分钟送达</span>
 							</div>
 							<p class="text">{{item.text}}</p>
-							<div class="type" v-show="item.recommend.length>0">
-								<i class="icon" :class="[item.rateType===1?'icon-thumb_down':'icon-thumb_up']"></i>
-								<ul>
-									<li class="recommend" v-for="name in item.recommend">{{name}}</li>
-								</ul>	
+							<div class="recommend" v-show="item.recommend && item.recommend.length">
+								<i class="icon" :class="[item.rateType===1?'iconthumb_down':'icon-thumb_up']"></i>
+								<span class="recommend-item" v-for="name in item.recommend">{{name}}</span>
 							</div>
 						</div>
 					</li>
 				</ul>
+				<div class="no-rating" v-show="!ratings || !ratings.length">暂无评论</div>
 			</div>
 		</div>
 		<shopcart :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></shopcart>
@@ -61,6 +58,7 @@
 	import split from 'components/split/split.vue';
 	import ratingSelect from 'components/ratingSelect/ratingSelect.vue';
 	import { formatDate } from '../../common/js/date.js';
+	import { eventBus } from '../../common/js/event-bus.js';
 	const ERR_OK = 0;
 	const ALL = 2;
 	export default {
@@ -90,19 +88,34 @@
 				if (response.errno === ERR_OK) {
 					this.ratings = response.data;
 					this.$nextTick(() => {
-						this._initScroll();
+						this.scroll = new BScroll(this.$refs.ratings, {
+							click: true
+						});
 					});
 				}
 			});
+			eventBus.$on('ratingType-select', (type) => {
+				this.selectType = type;
+				this.$nextTick(() => {
+					this.scroll.refresh();
+				});
+			});
+			eventBus.$on('contentToggle', (flag) => {
+				this.hasContent = flag;
+				this.$nextTick(() => {
+					this.scroll.refresh();
+				});
+			});
 		},
 		methods: {
-			_initScroll() {
-				if (!this.scroll) {
-					this.scroll = new BScroll(this.$refs.ratings, {
-						click: true
-					});
+			needShow(type, text) {
+				if (this.hasContent && !text) {
+					return false;
+				}
+				if (this.selectType === ALL) {
+					return true;
 				} else {
-					this.scroll.refresh();
+					return type === this.selectType;
 				}
 			}
 		},
@@ -124,91 +137,107 @@
 		width: 100%
 		overflow: hidden
 		.ratins-content
-			.score
+			.overview
 				display: flex
 				padding: 18px 0
-				.score-average
+				.overview-left
 					flex: 0 0 138px
+					padding: 6px 0
 					width: 138px
 					border-right: 1px solid rgba(7, 17, 27, 0.1)
 					text-align: center
-					.score-total
+					@media only screen and (max-width: 320px)
+						flex: 0 0 120px
+						width: 120px
+					.score
 						margin-bottom: 6px
 						line-height: 28px
 						font-size: 24px
 						color: rgb(255, 153, 0)
-					.score-text
+					.text
 						margin-bottom: 8px
 						line-height: 12px
 						font-size: 12px
 						color: rgb(7, 17, 27)
-					.rank-rate
-						margin-bottom: 6px
+					.rank
 						line-height: 10px
 						font-size: 10px
 						color: rgb(147, 153, 159)
-				.score-detail
+				.overview-right
 					flex: 1
-					padding: 0 24px
-					.server
+					padding: 6px 0 6px 24px
+					@media only screen and (max-width: 320px)
+						padding-left: 6px
+					.score-wrapper
 						margin-bottom: 8px
 						font-size: 0
-						&:last-child
-							margin-bottom: 0
 						.text
 							display: inline-block
 							margin-right: 12px
-							font-size: 12px
 							line-height: 18px
+							vertical-align: top
+							font-size: 12px
 							color: rgb(7, 17, 27)
 						.star-wrapper
 							display: inline-block
 							vertical-align: top
 							margin-right: 12px
-						.service-score
+						.score
 							display: inline-block
-							font-size: 12px
 							line-height: 18px
+							vertical-align: top
+							font-size: 12px
 							color: rgb(255, 153, 0)
-						.delivery-time
-							font-size: 12px
+					.delivery-wrapper
+						font-size: 0
+						.text
+							margin-right: 12px
 							line-height: 18px
+							font-size: 12px
+							color: rgb(7, 17, 27)
+						.delivery-time
+							line-height: 18px
+							font-size: 12px
 							color: rgb(147, 153, 159)
 			.rating-detail
-				margin: 0 18px
+				padding: 0 18px
 				.rating-item
-					position: relative
+					display: flex
 					padding: 18px 0
 					border-1px(rgba(7, 17, 27, 0.1))
 					.avatar
-						position: absolute
-						top: 18px
-						left: 0
+						flex: 0 0 28px
+						width: 28px
 						verttical-align: top
+						margin-right: 12px
 						img
 							border-radius: 50%
-					.time
-						position: absolute
-						top: 18px
-						right: 0
-						font-size: 10px
-						font-weight: 200
-						line-height: 12px
-						color: rgb(147, 153, 159)
 					.content
-						margin-left: 40px
+						position: relative
+						flex: 1
+						.time
+							position: absolute
+							top: 0
+							right: 0
+							font-size: 10px
+							font-weight: 200
+							line-height: 12px
+							color: rgb(147, 153, 159)
 						.user
 							margin-bottom: 4px
 							font-size: 10px
 							line-height: 12px
 							color: rgb(7, 17, 27)
-						.info
+						.star-wrapper
 							margin-bottom: 6px
 							font-size: 0
-							.star-wrapper
+							.star
 								display: inline-block
+								vertical-align: top
 								margin-right: 6px
 							.delivery-time
+								display: inline-block
+								vertical-align: top
 								font-size: 10px
 								font-weight: 200
 								line-height: 12px
@@ -218,29 +247,32 @@
 							font-size: 12px
 							line-height: 18px
 							color: rgb(7, 17, 27)
-						.type
+						.recommend
 							font-size: 0
 							.icon
 								display: inline-block
 								vertical-align: top
-								margin-right: 8px
+								margin: 0 8px 4px 0
 								font-size: 12px
 								line-height: 16px
 								&.icon-thumb_down
 									color: #b7bbbf
 								&.icon-thumb_up
 									color: rgb(0, 160, 220)
-							ul
+							.recommend-item
 								display: inline-block
-								font-size: 0
-								.recommend
-									display: inline-block
-									margin-right: 8px
-									padding: 0 6px
-									font-size: 9px
-									line-height: 16px
-									color: rgb(147, 153, 159)
-									border: 1px solid rgba(7, 17, 27, 0.1)
-									border-radius: 2px
-									background-color: rgb(255, 255, 255)
+								margin:0 8px 4px 0
+								padding: 0 6px
+								height: 16px
+								overflow: hidden
+								font-size: 9px
+								line-height: 16px
+								color: rgb(147, 153, 159)
+								border: 1px solid rgba(7, 17, 27, 0.1)
+								border-radius: 2px
+								background-color: rgb(255, 255, 255)
+				.no-rating
+					padding: 16px 0
+					font-size: 12px
+					color: rgb(147, 153, 159)
 </style>

@@ -101,6 +101,18 @@
 						this.scroll.refresh();
 					}
 				});
+				eventBus.$on('ratingType-select', (type) => {
+					this.selectType = type;
+					this.$nextTick(() => {
+						this.scroll.refresh();
+					});
+				});
+				eventBus.$on('contentToggle', (flag) => {
+					this.hasContent = flag;
+					this.$nextTick(() => {
+						this.scroll.refresh();
+					});
+				});
 			},
 			hide() {
 				this.showFlag = false;
@@ -128,20 +140,6 @@
 				let date = new Date(time);
 				return formatDate(date, 'yyyy-MM-dd hh:mm');
 			}
-		},
-		created() {
-			eventBus.$on('ratingType-select', (type) => {
-				this.selectType = type;
-				this.$nextTick(() => {
-					this.scroll.refresh();
-				});
-			});
-			eventBus.$on('contentToggle', (flag) => {
-				this.hasContent = flag;
-				this.$nextTick(() => {
-					this.scroll.refresh();
-				});
-			});
 		}
 	};
 </script>

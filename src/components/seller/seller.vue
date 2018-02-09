@@ -4,31 +4,33 @@
 			<div class="overview">
 				<div class="overview-title">
 					<h1 class="name">{{seller.name}}</h1>
-					<star :size="36" :score="seller.score"></star>
-					<span class="rank-rate">({{seller.rankRate}}%)</span>
-					<span class="sell-count">月售{{seller.sellCount}}单</span>
+					<div class="desc border-1px">
+						<star :size="36" :score="seller.score"></star>
+						<span class="rating-count">({{seller.rankRate}})</span>
+						<span class="sell-count">月售{{seller.sellCount}}单</span>
+					</div>
 					<div class="collect">
 						<i class="icon-favorite" :class="{active: isActive}" @click="collect"></i>
 						<p class="text">{{activeText}}</p>
 					</div>
 				</div>
-				<div class="overview-detail">
-					<div class="minPrice item">
-						<p class="text">起送价</p>
-						<p class="price"><span class="num">{{seller.minPrice}}</span>元</p>
-					</div>
-					<div class="deliveryPrice item">
-						<p class="text">商家配送</p>
-						<p class="price"><span class="num">{{seller.deliveryPrice}}</span>元</p>
-					</div>
-					<div class="deliveryTime item">
-						<p class="text">平均配送时间</p>
-						<p class="time price"><span class="num">{{seller.deliveryTime}}</span>分钟</p>
-					</div>
-				</div>
+				<ul class="remark">
+					<li class="block">
+						<p class="title">起送价</p>
+						<p class="text"><span class="num">{{seller.minPrice}}</span>元</p>
+					</li>
+					<li class="block">
+						<p class="title">商家配送</p>
+						<p class="text"><span class="num">{{seller.deliveryPrice}}</span>元</p>
+					</li>
+					<li class="block">
+						<p class="title">平均配送时间</p>
+						<p class=" text"><span class="num">{{seller.deliveryTime}}</span>分钟</p>
+					</li>
+				</ul>
 			</div>
 			<split></split>
-			<div class="info">
+			<div class="activity">
 				<div class="bulletin border-1px">
 					<h1 class="title">公告与活动</h1>
 					<p class="text">{{seller.bulletin}}</p>
@@ -48,6 +50,13 @@
 						<li class="pic-item pic-list-hook" v-for="pic in seller.pics" ref="picItem"><img :src="pic" width="120" height="90" /></li>
 					</ul>
 				</div>
+			</div>
+			<split></split>
+			<div class="infos">
+				<h1 class="title border-1px">商家信息</h1>
+				<ul>
+					<li class="info border-1px" v-for="info in seller.infos">{{info}}</li>
+				</ul>
 			</div>
 		</div>
 	</div>
@@ -81,19 +90,31 @@
 			}
 		},
 		created() {
-			this.$nextTick(() => {
-				this.scroll = new BScroll(this.$refs.seller, {
-					click: true
-				});
-				this.InitTabScroll();
-			});
 			this.classMap = ['decrease', 'discount', 'special', 'invoice', 'guarantee'];
+			this.$nextTick(() => {
+				this._initPicScroll();
+			});
+		},
+		watch: {
+			seller: '_initScroll'
+		},
+		mounted() {
+			this._initScroll();
 		},
 		methods: {
 			collect() {
 				this.isActive = !this.isActive;
 			},
-			InitTabScroll() {
+			_initScroll() {
+				if (!this.scroll) {
+					this.scroll = new BScroll(this.$refs.seller, {
+						click: true
+					});
+				} else {
+					this.scroll.refresh();
+				}
+			},
+			_initPicScroll() {
 	          let width = 0;
 	          let picList = this.$refs.picContent.getElementsByClassName('pic-list-hook');
 	          for (let i = 0; i < picList.length; i++) {
@@ -128,33 +149,35 @@
 		overflow: hidden
 		.seller-content
 			.overview
-				padding: 0 18px
+				padding: 18px 0
 				.overview-title
 					position: relative
-					padding: 18px 0
-					border-1px(rgba(7, 17, 27, 0.1))
-					font-size: 0
+					padding: 0 18px
 					.name
 						margin-bottom: 8px
 						line-height: 14px
 						font-size: 14px
 						color: rgb(7, 17, 27)
-					.star
-						display: inline-block
-						vertical-align: top
-						margin-right: 8px
-					.rank-rate, .sell-count
-						display: inline-block
-						vertical-align: top
-						line-height: 16px
-						font-size: 10px
-						color: rgb(77, 83, 95)
-					.rank-rate
-						margin-right: 12px
+					.desc
+						padding-bottom: 18px
+						border-1px(rgba(7, 17, 27, 0.1))
+						font-size: 0
+						.star
+							display: inline-block
+							vertical-align: top
+							margin-right: 8px
+						.rating-count, .sell-count
+							display: inline-block
+							vertical-align: top
+							line-height: 16px
+							font-size: 10px
+							color: rgb(77, 83, 95)
+						.rating-count
+							margin-right: 12px
 					.collect
 						position: absolute
-						top: 18px
-						right: 0
+						right: 18px
+						bottom: 18px
 						text-align: center
 						.icon-favorite
 							line-height: 24px
@@ -167,28 +190,28 @@
 							line-height: 10px
 							font-size: 10px
 							color: rgb(77, 85, 93)
-				.overview-detail
+				.remark
 					display: flex
-					padding: 18px 0
-					.item
+					padding: 18px 0 0 0
+					.block
 						flex: 1
 						text-align: center
 						border-right: 1px solid rgba(7, 17, 27, 0.1)
 						&:last-child
 							border-right: 0
-						.text
+						.title
+							margin-bottom: 4px
 							line-height: 10px
 							font-size: 10px
 							color: rgb(147, 153, 159)
-							margin-bottom: 4px
-						.price
+						.text
 							line-height: 24px
 							font-size: 10px
 							font-weight: 200
 							color: rgb(7, 17, 27)
 							.num
 								font-size: 24px
-			.info
+			.activity
 				padding: 0 18px
 				.bulletin
 					padding: 18px 0 16px 0
@@ -252,4 +275,23 @@
 					.pic-item
 						display: inline-block
 						margin-right: 6px
+						&:last-child
+							margin-right: 0
+			.infos
+				padding: 0 18px
+				.title
+					padding: 18px 0 12px 0
+					line-height: 14px
+					font-size: 14px
+					color: rgb(7, 17, 27)
+					border-1px(rgba(7, 17, 27, 0.1))
+				.info
+					padding: 16px 12px
+					line-height: 16px
+					font-size: 12px
+					font-weight: 200
+					color: rgb(7, 17, 27)
+					border-1px(rgba(7, 17, 27, 0.1))
+					&:last-child
+						border-none()
 </style>

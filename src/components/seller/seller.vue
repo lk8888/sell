@@ -9,9 +9,9 @@
 						<span class="rating-count">({{seller.rankRate}})</span>
 						<span class="sell-count">月售{{seller.sellCount}}单</span>
 					</div>
-					<div class="collect">
-						<i class="icon-favorite" :class="{active: isActive}" @click="collect"></i>
-						<p class="text">{{activeText}}</p>
+					<div class="collect" @click="toggleFavorite">
+						<i class="icon-favorite" :class="{'active': favorite}"></i>
+						<p class="text">{{favoriteText}}</p>
 					</div>
 				</div>
 				<ul class="remark">
@@ -65,6 +65,7 @@
 	import BScroll from 'better-scroll';
 	import star from 'components/star/star.vue';
 	import split from 'components/split/split.vue';
+	import { saveToLocal, loadFromLocal } from '../../common/js/store.js';
 	export default {
 		props: {
 			seller: {
@@ -77,33 +78,42 @@
 		},
 		data() {
 			return {
-				isActive: false
+				favorite: (() => {
+					return loadFromLocal(this.seller.id, 'favorite', false);
+				})()
 			};
 		},
 		computed: {
-			activeText() {
-				if (this.isActive) {
-					return '已收藏';
-				} else {
-					return '收藏';
-				}
+			favoriteText() {
+				return this.favorite ? '已收藏' : '收藏';
 			}
 		},
 		created() {
 			this.classMap = ['decrease', 'discount', 'special', 'invoice', 'guarantee'];
-			this.$nextTick(() => {
-				this._initPicScroll();
-			});
+			// this.$nextTick(() => {
+			// 	this._initPicScroll();
+			// });
 		},
 		watch: {
-			seller: '_initScroll'
+			seller: {
+				handler() {
+					this._initScroll();
+					this._initPicScroll();
+				},
+				deep: true
+			}
 		},
 		mounted() {
 			this._initScroll();
+			this._initPicScroll();
 		},
 		methods: {
-			collect() {
-				this.isActive = !this.isActive;
+			toggleFavorite(event) {
+				if (!event._constructed) {
+					return;
+				}
+				this.favorite = !this.favorite;
+				saveToLocal(this.seller.id, 'favorite', this.favorite);
 			},
 			_initScroll() {
 				if (!this.scroll) {
@@ -176,14 +186,15 @@
 							margin-right: 12px
 					.collect
 						position: absolute
-						right: 18px
-						bottom: 18px
+						right: 11px
+						top: 0
+						width: 50px
 						text-align: center
 						.icon-favorite
+							margin-bottom: 4px
 							line-height: 24px
 							font-size: 24px
 							color: #d4d6d9
-							margin-bottom: 4px
 							&.active
 								color: rgb(240, 20, 20)
 						.text

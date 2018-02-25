@@ -65,7 +65,7 @@
 		</transition>
 	</div>
 </template>
-<script>
+<script type="text/ecmascript-6">
 	import star from 'components/star/star.vue';
 	export default {
 		components: {
@@ -213,7 +213,7 @@
 			width: 100%
 			height: 100%
 			z-index: -1
-			filter: blur(10px)	
+			filter: blur(10px)
 		.fade-enter-active, .fade-leave-active
 			transition:	all .5s
 		.fade-enter, .fade-leave-to
@@ -235,7 +235,7 @@
 				height: auto
 				min-height: 100%
 				width: 100%
-				.detail-content	
+				.detail-content
 					margin-top: 64px
 					padding-bottom: 64px
 					h1
@@ -268,7 +268,7 @@
 							padding: 0 12px
 							margin-bottom: 12px
 							font-size: 0
-							&: last-child
+							&:last-child
 								margin-bottom: 0
 							.icon
 								display: inline-block

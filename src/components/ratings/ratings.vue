@@ -48,12 +48,10 @@
 				<div class="no-rating" v-show="!ratings || !ratings.length">暂无评论</div>
 			</div>
 		</div>
-		<shopcart :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></shopcart>
 	</div>
 </template>
 <script type="text/ecmascript-6">
 	import BScroll from 'better-scroll';
-	import shopcart from 'components/shopcart/shopcart.vue';
 	import star from 'components/star/star.vue';
 	import split from 'components/split/split.vue';
 	import ratingSelect from 'components/ratingSelect/ratingSelect.vue';
@@ -63,7 +61,6 @@
 	const ALL = 2;
 	export default {
 		components: {
-			shopcart,
 			star,
 			split,
 			ratingSelect
@@ -133,7 +130,7 @@
 		position: absolute
 		top: 174px
 		left: 0
-		bottom: 48px
+		bottom: 0
 		width: 100%
 		overflow: hidden
 		.ratins-content

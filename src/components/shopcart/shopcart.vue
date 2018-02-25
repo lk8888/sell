@@ -53,7 +53,7 @@
 		</transition>
 	</div>
 </template>
-<script>
+<script type="text/ecmascript-6">
 	import cartcontrol from 'components/cartcontrol/cartcontrol.vue';
 	import BScroll from 'better-scroll';
 	import { eventBus } from '../../common/js/event-bus.js';
@@ -178,7 +178,7 @@
 					}
 				}
 			},
-			enter(ele) {
+			enter(ele, done) {
 				/* eslint-disable no-unused-vars */
 				let rf = ele.offsetHeight;
 				this.$nextTick(() => {
@@ -187,6 +187,7 @@
 					let inner = ele.getElementsByClassName('inner-hook')[0];
 					inner.style.webkitTransform = 'translate3d(0, 0, 0)';
 					inner.style.transform = 'translate3d(0, 0, 0)';
+					ele.addEventListener('transitionend', done);
 				});
 			},
 			afterEnter(ele) {

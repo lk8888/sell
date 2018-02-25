@@ -16,7 +16,7 @@
 		</div>
 	</div>
 </template>
-<script>
+<script type="text/ecmascript-6">
 	import { eventBus } from '../../common/js/event-bus.js';
 	const POSITIVE = 0;
 	const NEGATIVE = 1;
@@ -84,7 +84,7 @@
 		}
 	};
 </script>
-<style lang="stylus" rel="stylesheet">
+<style lang="stylus" rel="stylesheet/stylus">
 	@import '../../common/stylus/mixin.styl'
 	.ratingSelect
 		border-bottom: 2px solid rgba(7, 17, 27, 0.1)

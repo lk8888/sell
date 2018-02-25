@@ -3,7 +3,7 @@
 		<span v-for="itemClass in itemClasses" :class="itemClass" class="star-item"></span>
 	</div>	
 </template>
-<script>
+<script type="text/ecmascript-6">
 	const LENGTH = 5;
 	const CLA_ON = 'on';
 	const CLA_HALF = 'half';
@@ -40,7 +40,7 @@
 		}
 	};
 </script>
-<style rel="stylesheet/stylus" lang="stylus">
+<style lang="stylus" rel="stylesheet/stylus">
 	@import '../../common/stylus/mixin.styl'
 	.star
 		font-size: 0
@@ -86,7 +86,7 @@
 				&.on
 					bg-image("star24_on")
 				&.half
-					bg-image("star24_half")	
+					bg-image("star24_half")
 				&.off
 					bg-image("star24_off")
 </style>

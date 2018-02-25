@@ -52,7 +52,7 @@
 		</div>
 	</transition>
 </template>
-<script>
+<script type="text/ecmascript-6">
 	import Vue from 'vue';
 	import BScroll from 'better-scroll';
 	import cartcontrol from 'components/cartcontrol/cartcontrol.vue';
@@ -182,7 +182,7 @@
 					color: #fff
 		.info, .intro
 			padding: 18px
-			background-color: #fff		
+			background-color: #fff
 		.title
 			font-size: 14px
 			font-weight: 700
@@ -275,12 +275,12 @@
 						margin-bottom: 6px
 						line-height: 12px
 						font-size: 10px
-						color: rgb(147, 153, 159)						
+						color: rgb(147, 153, 159)
 					.content
 						font-size: 12px
 						line-height: 16px
 						.icon
-							margin-right: 4px						
+							margin-right: 4px
 							&.icon-thumb_down
 								color: rgb(147, 153, 159)
 							&.icon-thumb_up

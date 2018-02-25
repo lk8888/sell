@@ -40,7 +40,7 @@
 		<shopcart ref="shopcart" :select-foods="selectFoods" :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></shopcart>
 	</div>
 </template>
-<script>
+<script type="text/ecmascript-6">
 	import shopcart from 'components/shopcart/shopcart.vue';
 	import cartcontrol from 'components/cartcontrol/cartcontrol.vue';
 	import BScroll from 'better-scroll';
@@ -173,7 +173,7 @@
 					background-color: #fff
 					.text
 						border-none()
-						font-weight: 400	
+						font-weight: 400
 				.text
 					display: table-cell
 					vertical-align: middle
@@ -201,7 +201,7 @@
 							bg-image('invoice_3')
 						&.guarantee
 							bg-image('guarantee_3')
-		.foods-wrapper 	
+		.foods-wrapper
 			flex: 1
 			.foods-list
 				.title

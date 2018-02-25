@@ -11,7 +11,7 @@
 		<div class="cart-add icon-add_circle" @click.stop="addCart"></div>
 	</div>
 </template>
-<script>
+<script type="text/ecmascript-6">
 	import Vue from 'vue';
 	import { eventBus } from '../../common/js/event-bus.js';
 	export default {

@@ -90,22 +90,16 @@
 		},
 		created() {
 			this.classMap = ['decrease', 'discount', 'special', 'invoice', 'guarantee'];
-			// this.$nextTick(() => {
-			// 	this._initPicScroll();
-			// });
 		},
 		watch: {
-			seller: {
-				handler() {
-					this._initScroll();
-					this._initPicScroll();
-				},
-				deep: true
+			'seller'() {
+				this._initScroll();
+				this._initPics();
 			}
 		},
 		mounted() {
 			this._initScroll();
-			this._initPicScroll();
+			this._initPics();
 		},
 		methods: {
 			toggleFavorite(event) {
@@ -124,27 +118,47 @@
 					this.scroll.refresh();
 				}
 			},
-			_initPicScroll() {
-	          let width = 0;
-	          let picList = this.$refs.picContent.getElementsByClassName('pic-list-hook');
-	          for (let i = 0; i < picList.length; i++) {
-	              width += this.$refs.picItem[i].getBoundingClientRect().width;// getBoundingClientRect() 返回元素的大小及其相对于视口的位置
-	          }
-	          this.$refs.picContent.style.width = width + 'px';
-	          this.$nextTick(() => {
-	              if (!this.picScroll) {
-	                this.picScroll = new BScroll(this.$refs.picWrapper, {
-	                  startX: 0,
-	                  click: true,
-	                  scrollX: true,
-	                  scrollY: false,
-	                  eventPassthrough: 'vertical'
-	                });
-	              } else {
-	                this.picScroll.refresh();
-	              }
-	          });
-	        }
+			/* _initPicScroll() {
+				if (this.seller.pics) {
+					let width = 0;
+					for (let i = 0; i < this.seller.pics.length; i++) {
+						width += this.$refs.picItem[i].getBoundingClientRect().width;// getBoundingClientRect() 返回元素的大小及其相对于视口的位置
+					}
+					console.log(this.seller.pics.length);
+					this.$refs.picContent.style.width = width + 'px';
+					this.$nextTick(() => {
+						if (!this.picScroll) {
+							this.picScroll = new BScroll(this.$refs.picWrapper, {
+							startX: 0,
+							click: true,
+							scrollX: true,
+							scrollY: false,
+							eventPassthrough: 'vertical'
+							});
+						} else {
+							this.picScroll.refresh();
+						}
+					});
+				}
+			} */
+			_initPics() {
+				if (this.seller.pics) {
+					let picWidth = 120;
+					let margin = 6;
+					let width = (picWidth + margin) * this.seller.pics.length - margin;
+					this.$refs.picContent.style.width = width + 'px';
+					this.$nextTick(() => {
+						if (!this.picScroll) {
+							this.picScroll = new BScroll(this.$refs.picWrapper, {
+								scrollX: true,
+								eventPassthrough: 'vertical'
+							});
+						} else {
+							this.picScroll.refresh();
+						}
+					});
+				}
+			}
 		}
 	};
 </script>
@@ -283,11 +297,13 @@
 					width: 100%
 					ul
 						font-size: 0
-					.pic-item
-						display: inline-block
-						margin-right: 6px
-						&:last-child
-							margin-right: 0
+						.pic-item
+							display: inline-block
+							margin-right: 6px
+							width: 120px
+							height: 90px
+							&:last-child
+								margin-right: 0
 			.infos
 				padding: 0 18px
 				.title
